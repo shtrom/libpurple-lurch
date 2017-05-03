@@ -16,14 +16,19 @@ CMAKE_FLAGS = -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS=-fPIC
 
 ### flags
 #
-PKGCFG_C=$(shell $(PKG_CONFIG) --cflags glib-2.0 purple) \
+LIBPURPLE_CFLAGS=$(shell $(PKG_CONFIG) --cflags purple)
+LIBPURPLE_LDFLAGS=$(shell $(PKG_CONFIG) --cflags purple) \
+		    -L$(shell $(PKG_CONFIG) --variable=plugindir purple)
+
+PKGCFG_C=$(shell $(PKG_CONFIG) --cflags glib-2.0) \
+		 $(LIBPURPLE_CFLAGS) \
 		 $(shell $(XML2_CONFIG) --cflags)
 
-PKGCFG_L=$(shell $(PKG_CONFIG) --libs purple glib-2.0 sqlite3 mxml) \
+PKGCFG_L=$(shell $(PKG_CONFIG) --libs glib-2.0 sqlite3 mxml) \
+		 $(LIBPURPLE_LDFLAGS) \
 		 $(shell $(XML2_CONFIG) --libs) \
-		 -L$(shell $(PKG_CONFIG) --variable=plugindir purple) \
 		 $(shell $(LIBGCRYPT_CONFIG) --libs)
-		 
+
 ifneq ("$(wildcard /etc/redhat-release)","")
     LJABBER= -lxmpp
 else
