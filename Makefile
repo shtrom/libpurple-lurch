@@ -65,7 +65,7 @@ AXC_PATH=$(AXC_BUILD)/libaxc-nt.a
 AX_DIR=$(AXC_DIR)/lib/libsignal-protocol-c
 AX_PATH=$(AX_DIR)/build/src/libsignal-protocol-c.a
 
-FILES=$(LOMEMO_PATH) $(AXC_PATH) $(AX_PATH)
+VENDOR_LIBS=$(LOMEMO_PATH) $(AXC_PATH) $(AX_PATH)
 
 
 ### make rules
@@ -91,11 +91,11 @@ $(LOMEMO_PATH):
 $(BDIR)/%.o: $(SDIR)/%.c $(BDIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(PLUGIN_CPPFLAGS) -c $(SDIR)/$*.c -o $@
 
-$(BDIR)/lurch.so: $(BDIR)/lurch.o $(FILES)
+$(BDIR)/lurch.so: $(BDIR)/lurch.o $(VENDOR_LIBS)
 	$(CC) -fPIC -shared $(CFLAGS) $(CPPFLAGS) $(PLUGIN_CPPFLAGS) \
-		"$(BDIR)/lurch.o" $(FILES) \
+		"$(BDIR)/lurch.o" $(VENDOR_LIBS) \
 		-o $@ $(LDFLAGS)
-$(BDIR)/lurch.a: $(BDIR)/lurch.o
+$(BDIR)/lurch.a: $(BDIR)/lurch.o $(VENDOR_LIBS)
 	$(AR) rcs $@ $^
 
 install: $(BDIR)/lurch.so
