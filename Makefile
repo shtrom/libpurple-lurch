@@ -37,6 +37,7 @@ endif
 
 HEADERS=-I$(HDIR)/jabber -I$(LOMEMO_SRC) -I$(AXC_SRC) -I$(AX_DIR)/src
 CFLAGS += -std=c11 -Wall -g -Wstrict-overflow $(PKGCFG_C) $(HEADERS)
+PLUGIN_CPPFLAGS=-DPURPLEPLUGINS
 CPPFLAGS += -D_XOPEN_SOURCE=700 -D_BSD_SOURCE
 LDFLAGS += -ldl -lm $(PKGCFG_L) $(LJABBER)
 
@@ -88,10 +89,10 @@ $(LOMEMO_PATH):
 	$(MAKE) -C "$(LOMEMO_DIR)" build/libomemo-conversations.a
 
 $(BDIR)/%.o: $(SDIR)/%.c $(BDIR)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(SDIR)/$*.c -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(PLUGIN_CPPFLAGS) -c $(SDIR)/$*.c -o $@
 
 $(BDIR)/lurch.so: $(BDIR)/lurch.o $(FILES)
-	$(CC) -fPIC -shared $(CFLAGS) $(CPPFLAGS) \
+	$(CC) -fPIC -shared $(CFLAGS) $(CPPFLAGS) $(PLUGIN_CPPFLAGS) \
 		"$(BDIR)/lurch.o" $(FILES) \
 		-o $@ $(LDFLAGS)
 $(BDIR)/lurch.a: $(BDIR)/lurch.o
