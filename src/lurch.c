@@ -2296,7 +2296,7 @@ static PurpleCmdRet lurch_cmd_func(PurpleConversation * conv_p,
   }
 
   ret_val = axc_get_device_id(axc_ctx_p, &id);
-  purple_debug_misc("lurch", "%s: %s db: %s (%i)\n", __func__, "axc_get_device_id", axc_context_get_db_fn(axc_ctx_p, ret_val);
+  purple_debug_misc("lurch", "%s: %s db: %s (%i)\n", __func__, "axc_get_device_id", axc_context_get_db_fn(axc_ctx_p), ret_val);
   if (ret_val) {
     err_msg = g_strdup_printf("Failed to access axc db %s. Does the path seem correct?", axc_context_get_db_fn(axc_ctx_p));
     goto cleanup;
