@@ -2679,10 +2679,10 @@ cleanup:
 }
 
 /**
- * Actions to perform on plugin load.
- * Inits the crypto and registers signal and PEP handlers.
+ * Register signal handler (needs to be done once libpurple has been fully initialised).
  */
-static gboolean lurch_plugin_load(PurplePlugin * plugin_p) {
+static int lurch_register_signals(PurplePlugin * plugin_p)
+{
   int ret_val = 0;
   char * err_msg_dbg = (void *) 0;
 
@@ -2701,16 +2701,6 @@ static gboolean lurch_plugin_load(PurplePlugin * plugin_p) {
     err_msg_dbg = "failed to get devicelist pep node name";
     goto cleanup;
   }
-
-  lurch_cmd_id = purple_cmd_register("lurch",
-                                     "wwws",
-                                     PURPLE_CMD_P_PLUGIN,
-                                     PURPLE_CMD_FLAG_IM | PURPLE_CMD_FLAG_CHAT | PURPLE_CMD_FLAG_PRPL_ONLY | PURPLE_CMD_FLAG_ALLOW_WRONG_ARGS,
-                                     JABBER_PROTOCOL_ID,
-                                     lurch_cmd_func,
-                                     "lurch &lt;help&gt;:  "
-                                     "Interface to the lurch plugin. For details, use the 'help' argument.",
-                                     (void *) 0);
 
   // register handlers
   jabber_handle_p = purple_plugins_find_with_id(JABBER_PROTOCOL_ID);
@@ -2748,6 +2738,26 @@ cleanup:
 
   return TRUE;
 }
+
+/**
+ * Actions to perform on plugin load.
+ * Inits the crypto and registers signal and PEP handlers.
+ */
+static gboolean lurch_plugin_load(PurplePlugin * plugin_p) {
+  lurch_cmd_id = purple_cmd_register("lurch",
+                                     "wwws",
+                                     PURPLE_CMD_P_PLUGIN,
+                                     PURPLE_CMD_FLAG_IM | PURPLE_CMD_FLAG_CHAT | PURPLE_CMD_FLAG_PRPL_ONLY | PURPLE_CMD_FLAG_ALLOW_WRONG_ARGS,
+                                     JABBER_PROTOCOL_ID,
+                                     lurch_cmd_func,
+                                     "lurch &lt;help&gt;:  "
+                                     "Interface to the lurch plugin. For details, use the 'help' argument.",
+                                     (void *) 0);
+
+  return lurch_register_signals(plugin_p);
+
+}
+
 
 static gboolean lurch_plugin_unload(PurplePlugin * plugin_p) {
   //g_hash_table_destroy(chat_users_ht_p);
@@ -2794,6 +2804,13 @@ lurch_plugin_init(PurplePlugin * plugin_p) {
   PurplePluginInfo * info_p = plugin_p->info;
 
   info_p->dependencies = g_list_prepend(info_p->dependencies, "prpl-jabber");
+}
+
+void lurch_plugin_register_signals()
+{
+  purple_debug_misc("lurch", "%s\n", __func__);
+  PurplePlugin * plugin_p = purple_plugins_find_with_id(info.id);
+  lurch_register_signals(plugin_p);
 }
 
 PURPLE_INIT_PLUGIN(lurch, lurch_plugin_init, info)
